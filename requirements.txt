@@ -1,0 +1,14 @@
+pandas
+numpy
+ccxt
+backtrader
+backtesting
+empyrical
+pyfolio
+streamlit
+plotly
+matplotlib
+pytest
+black
+flake8
+# mcp는 선택적으로 설치 (필요시) 
