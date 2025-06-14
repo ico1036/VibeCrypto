@@ -38,10 +38,22 @@ if 'backtest_period' in df.columns:
 st.write("## Cards (전략/옵션/기간/엔진)")
 st.dataframe(df)
 
-## 전체 카드 실행 ##
-if st.button("전체 카드 실행"):
-    for card in cards:
-        st.subheader(f"카드: {card['id']} ({card['strategy']})")
+# 캔들스틱 기간 선택
+available_timeframes = ['1m', '5m', '15m', '30m', '1h', '4h', '1d']
+timeframe = st.selectbox('캔들스틱 기간(타임프레임) 선택', available_timeframes, index=available_timeframes.index('1h') if '1h' in available_timeframes else 0)
+
+## 카드 선택 ##
+card_ids = [card['id'] for card in cards]
+selected_ids = st.multiselect("실행할 카드를 선택하세요", card_ids, default=card_ids)
+selected_cards = [card for card in cards if card['id'] in selected_ids]
+
+## 선택된 카드 실행 ##
+if st.button("선택한 카드 실행"):
+    for card in selected_cards:
+        # 선택한 타임프레임을 카드에 반영
+        card = card.copy()
+        card['timeframe'] = timeframe
+        st.subheader(f"카드: {card['id']} ({card['strategy']}) [{card['timeframe']}]")
         result = run_card_result(card)
         # 백테스트
         st.write("### 백테스트")
@@ -50,6 +62,24 @@ if st.button("전체 카드 실행"):
         st.write("지표:", metrics_bt)
         st.write("트레이드 수:", len(trades_bt))
         st.plotly_chart(plot_performance(result['backtest']['results']['equity']), use_container_width=True)
+        # 캔들+포지션+트레이드뷰 차트 추가 (실제 OHLCV, 포지션, 트레이드 사용)
+        from report.plot import plot_candles_with_trades
+        ohlcv = result['backtest']['ohlcv']
+        positions = result['backtest']['results']['positions']
+        trades = result['backtest']['trades']
+        # 최근 7일만 필터링
+        if not ohlcv.empty:
+            last_date = ohlcv.index.max()
+            first_date = last_date - pd.Timedelta(days=7)
+            ohlcv_7d = ohlcv[ohlcv.index >= first_date]
+            positions_7d = positions[positions.index >= first_date]
+            trades_7d = trades[trades['시점'] >= first_date]
+            st.plotly_chart(plot_candles_with_trades(ohlcv_7d, positions_7d, trades_7d), use_container_width=True)
+            # 포지션(비중)만 별도 시각화
+            from report.plot import plot_position_weight
+            st.plotly_chart(plot_position_weight(positions_7d), use_container_width=True)
+        else:
+            st.plotly_chart(plot_candles_with_trades(ohlcv, positions, trades), use_container_width=True)
         # 실시간 시그널
         st.write("### 실시간 시그널")
         realtime_signal = float(result.get('realtime_signal', None)) if result.get('realtime_signal', None) is not None else None

@@ -1,0 +1,27 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# VSCode settings
+.vscode/
+
+# Virtual environment
+.venv/
+
+# Data files
+data/
+
+# Cards config (if sensitive)
+cards/cards.yaml
+
+# Pytest cache
+.pytest_cache/
+
+# Streamlit/matplotlib/plotly cache (if any)
+.streamlit/
+
+# OS files
+.DS_Store
+
+# Ignore workflow state (if not to be versioned)
+workflow_state.md 

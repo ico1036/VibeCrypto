@@ -25,10 +25,7 @@ def run_backtest(data: pd.DataFrame, strategy_func, params: dict, lookback: int,
         if position_transform is not None:
             pos = position_transform(score)
         else:
-            pos = np.zeros(n_assets)
-            if np.any(~np.isnan(score)):
-                idx = np.nanargmax(score)
-                pos[idx] = 1.0
+            pos = np.array(score)  # score를 weight(비중)로 바로 사용
         positions.append(pos)
     # 포지션 DataFrame 만들기
     pos_df = pd.DataFrame(positions, index=dates[lookback:], columns=tickers)

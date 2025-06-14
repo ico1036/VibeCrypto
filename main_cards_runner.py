@@ -14,9 +14,24 @@ def to_utc_ts(val):
     return ts
 
 def get_strategy_func(strategy_name):
-    mod = importlib.import_module(f"strategies.{strategy_name.lower()}")
-    func = [v for k, v in vars(mod).items() if k.lower().startswith(strategy_name.lower())][0]
-    return func
+    import re
+    def camel_to_snake(name):
+        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        s2 = re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1)
+        return re.sub('_+', '_', s2).lower()
+    mod_name = camel_to_snake(strategy_name)
+    mod = importlib.import_module(f"strategies.{mod_name}")
+    # 함수명 후보: snake_case, snake_case_strategy, lower, lower_strategy
+    candidates = [
+        camel_to_snake(strategy_name),
+        camel_to_snake(strategy_name) + '_strategy',
+        strategy_name.lower(),
+        strategy_name.lower() + '_strategy'
+    ]
+    for k, v in vars(mod).items():
+        if any(c in k.lower() for c in candidates) and callable(v):
+            return v
+    raise ImportError(f"No strategy function found for {strategy_name} in {mod_name}")
 
 def main():
     cards = cards_from_yaml()
@@ -57,7 +72,7 @@ def run_card_result(card):
     last_signal = signal_series.iloc[-1] if hasattr(signal_series, 'iloc') and not signal_series.empty else None
     return {
         'card': card,
-        'backtest': {'results': results_bt, 'trades': trades_bt, 'metrics': metrics_bt},
+        'backtest': {'results': results_bt, 'trades': trades_bt, 'metrics': metrics_bt, 'ohlcv': data_bt},
         'realtime_signal': last_signal,
     }
 
