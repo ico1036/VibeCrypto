@@ -1,44 +1,44 @@
 # Crypto Trading Backtest & Forwardtest System
 
-이 프로젝트는 암호화폐 트레이딩 전략을 robust하게 백테스트/포워드테스트하고, 결과를 시각화 및 분석할 수 있는 시스템이다. 데이터는 CCXT, mcp 등에서 자동으로 불러오고, 전략은 파이썬 함수로 등록/수정/삭제 가능하다. 주요 성능지표와 크립토 퀀트 회사에서 쓰는 리포트까지 제공한다.
+This project is a robust system for backtesting and forward testing cryptocurrency trading strategies, with visualization and analysis of results. Data is automatically fetched from CCXT, mcp, etc. Strategies can be registered/modified/deleted as Python functions. The system provides key performance metrics and professional-style reports used by crypto quant firms.
 
-## 주요 기능
-- 거래소 데이터 자동 다운로드 (CCXT, mcp)
-- 전략 등록/수정/삭제 (파이썬 함수 기반)
-- 백테스트/포워드테스트 엔진 (Backtrader/Backtesting.py)
-- 성능지표: 누적수익률, 연별수익률, 연율화수익률, MDD, Sharpe, 변동성 등
-- 시각화: 누적수익률 그래프, 연도별 바차트, 드로우다운, 히트맵 등
-- Streamlit 웹 UI: 전략 선택, 파라미터 입력, 결과 리포트/그래프 확인
+## Main Features
+- Automatic exchange data download (CCXT, mcp)
+- Strategy registration/modification/deletion (Python function-based)
+- Backtest/forward test engine (Backtrader/Backtesting.py)
+- Performance metrics: cumulative return, annual return, annualized return, MDD, Sharpe, volatility, etc.
+- Visualization: cumulative return graph, annual bar chart, drawdown, heatmap, etc.
+- Streamlit web UI: select strategy, input parameters, view report/graphs
 
-## 폴더 구조
+## Folder Structure
 ```
-/data         # 시세 데이터 저장
-/strategies   # 트레이딩 전략 파이썬 파일
-/backtest     # 백테스트/포워드테스트 엔진
-/report       # 리포트/시각화 코드
-app.py        # Streamlit 메인 앱
+/data         # Price data storage
+/strategies   # Python files for trading strategies
+/backtest     # Backtest/forward test engine
+/report       # Report/visualization code
+app.py        # Streamlit main app
 ```
 
-## 설치 및 실행법
+## Installation & Usage
 ```bash
-# 의존성 설치
+# Install dependencies
 pip install -r requirements.txt
 
-# Streamlit 앱 실행
+# Run Streamlit app
 streamlit run app.py
 ```
 
-## 예시 코드/스크린샷
+## Example Screenshots
 
-아래는 실제 시스템 화면 예시입니다.
+Below are example screenshots of the actual system.
 
-![전략 선택 화면](image/select_card.png)
-![전략 카드 상세](image/strategy_card.png)
-![트레이딩 뷰](image/trading_view.png)
-![PnL 차트](image/PnLchart.png)
-![포워드 테스트 결과](image/forward_test.png)
+![Strategy Selection Screen](image/select_card.png)
+![Strategy Card Detail](image/strategy_card.png)
+![Trading View](image/trading_view.png)
+![PnL Chart](image/PnLchart.png)
+![Forward Test Result](image/forward_test.png)
 
-## 주요 의존성
+## Main Dependencies
 - pandas
 - numpy
 - ccxt
@@ -52,12 +52,12 @@ streamlit run app.py
 - pytest
 - black
 - flake8
-- (mcp는 필요시 별도 설치)
+- (mcp: install separately if needed)
 
-## 기여 방법
-- PR/이슈 환영
-- 전략/지표/시각화 추가 자유롭게 제안
+## Contribution
+- PRs/issues are welcome
+- Feel free to suggest or add strategies/indicators/visualizations
 # VibeCrypto
 
-## 라이선스
-이 프로젝트는 GNU General Public License(GPL) 하에 배포됩니다.
+## License
+This project is distributed under the GNU General Public License (GPL).
