@@ -58,3 +58,6 @@ streamlit run app.py
 - PR/이슈 환영
 - 전략/지표/시각화 추가 자유롭게 제안
 # VibeCrypto
+
+## 라이선스
+이 프로젝트는 GNU General Public License(GPL) 하에 배포됩니다.
