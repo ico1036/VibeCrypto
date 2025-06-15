@@ -33,10 +33,20 @@ def get_strategy_func(strategy_name):
             return v
     raise ImportError(f"No strategy function found for {strategy_name} in {mod_name}")
 
-def main():
-    cards = cards_from_yaml()
-    for card in cards:
-        run_card_result(card)
+def get_realtime_signal(card, strategy_func):
+    import datetime
+    now = pd.Timestamp.utcnow()
+    tf_map = {'1m': 1, '5m': 5, '15m': 15, '30m': 30, '1h': 60, '4h': 240, '1d': 1440}
+    tf_min = tf_map.get(card['timeframe'], 60)
+    since = now - pd.Timedelta(minutes=200*tf_min)
+    data_live = download_ohlcv(card['symbol'], card['timeframe'], since, now)
+    if len(data_live.columns) == 1 or (len(data_live.columns) <= 5 and 'close' in data_live.columns[0]):
+        data_live = data_live.rename(columns={col: 'close' for col in data_live.columns})
+    print(f"[DEBUG-data_live] {data_live.head()} ... tail={data_live.tail()}")
+    signal_series = strategy_func(data_live, **card['params'])
+    print(f"[DEBUG-signal_series] {signal_series[:5]} ... tail={signal_series[-5:]}")
+    last_signal = signal_series.iloc[-1] if hasattr(signal_series, 'iloc') and not signal_series.empty else None
+    return last_signal
 
 def run_card_result(card):
     """
@@ -57,24 +67,19 @@ def run_card_result(card):
     results_bt = run_backtest(data_bt, strategy_func, card['params'], lookback, initial_capital=1.0)
     trades_bt = results_bt['trades']
     metrics_bt = calc_metrics(results_bt['equity'])
+    
     # 실시간 시그널
-    import datetime
-    now = pd.Timestamp.utcnow()
-    tf_map = {'1m': 1, '5m': 5, '15m': 15, '30m': 30, '1h': 60, '4h': 240, '1d': 1440}
-    tf_min = tf_map.get(card['timeframe'], 60)
-    since = now - pd.Timedelta(minutes=200*tf_min)
-    data_live = download_ohlcv(card['symbol'], card['timeframe'], since, now)
-    if len(data_live.columns) == 1 or (len(data_live.columns) <= 5 and 'close' in data_live.columns[0]):
-        data_live = data_live.rename(columns={col: 'close' for col in data_live.columns})
-    print(f"[DEBUG-data_live] {data_live.head()} ... tail={data_live.tail()}")
-    signal_series = strategy_func(data_live, **card['params'])
-    print(f"[DEBUG-signal_series] {signal_series[:5]} ... tail={signal_series[-5:]}")
-    last_signal = signal_series.iloc[-1] if hasattr(signal_series, 'iloc') and not signal_series.empty else None
+    last_signal = get_realtime_signal(card, strategy_func)
     return {
         'card': card,
         'backtest': {'results': results_bt, 'trades': trades_bt, 'metrics': metrics_bt, 'ohlcv': data_bt},
         'realtime_signal': last_signal,
     }
+
+def main():
+    cards = cards_from_yaml()
+    for card in cards:
+        run_card_result(card)
 
 if __name__ == "__main__":
     main() 

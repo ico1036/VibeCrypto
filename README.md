@@ -29,15 +29,30 @@ streamlit run app.py
 ```
 
 ## 예시 코드/스크린샷
-(추후 추가)
+
+아래는 실제 시스템 화면 예시입니다.
+
+![전략 선택 화면](image/select_card.png)
+![전략 카드 상세](image/strategy_card.png)
+![트레이딩 뷰](image/trading_view.png)
+![PnL 차트](image/PnLchart.png)
+![포워드 테스트 결과](image/forward_test.png)
 
 ## 주요 의존성
-- python 3.10+
-- pandas, numpy
-- ccxt, mcp
-- backtrader, backtesting.py
-- empyrical, pyfolio
-- streamlit, plotly, matplotlib
+- pandas
+- numpy
+- ccxt
+- backtrader
+- backtesting
+- empyrical
+- pyfolio
+- streamlit
+- plotly
+- matplotlib
+- pytest
+- black
+- flake8
+- (mcp는 필요시 별도 설치)
 
 ## 기여 방법
 - PR/이슈 환영

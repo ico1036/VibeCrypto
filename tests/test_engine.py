@@ -1,3 +1,5 @@
+import sys, os
+sys.path.insert(0, os.path.abspath(os.path.dirname(os.path.dirname(__file__))))
 import pandas as pd
 from backtest.data_loader import download_ohlcv
 from backtest.engine import run_backtest
@@ -19,9 +21,9 @@ def main():
     lookback = 24
     params = {'fast': 8, 'slow': 24}
     def strategy_wrapper(window, fast, slow):
-        # run_backtest는 (n_assets,) 벡터를 기대하므로, 시리즈를 벡터로 변환
+        # run_backtest는 score(weight)로 바로 사용하므로 float만 반환
         sig = sma_cross_strategy(window.rename(columns={f'btc_close': 'close'}), fast=fast, slow=slow)
-        return [sig.iloc[-1]]
+        return sig.iloc[-1]
     result = run_backtest(
         data,
         strategy_func=strategy_wrapper,
@@ -37,6 +39,12 @@ def main():
     print(result['trades'].head())
     print('\nMetrics:')
     print(calc_metrics(result['equity']))
+
+    # 실시간 시그널 테스트 (가장 최근 100개 데이터로)
+    print('\n[실시간 시그널 테스트]')
+    recent = data.tail(lookback)
+    realtime_signal = strategy_wrapper(recent, **params)
+    print(f'실시간 시그널: {realtime_signal}')
 
 if __name__ == '__main__':
     main() 

@@ -15,7 +15,8 @@ def rsi_meanrev_strategy(data, rsi_period=14, rsi_thresh=30):
     avg_gain = gain.rolling(rsi_period).mean()
     avg_loss = loss.rolling(rsi_period).mean()
     rs = avg_gain / (avg_loss + 1e-9)
-    rsi = 100 - (100 / (1 + rs))
+    rsi = 10
+    0 - (100 / (1 + rs))
     df['rsi'] = rsi
     # rsi가 rsi_thresh보다 낮을수록 비중↑
     signal = ((rsi_thresh - df['rsi']) / rsi_thresh).clip(0, 1).fillna(0)

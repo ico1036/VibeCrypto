@@ -34,4 +34,5 @@ def rolling_vwap_channel_strategy(
     upper = df[f'vwap_p{percentiles[-1]}']
     close = df[source_col]
     signal = np.where(close < lower, 1, np.where(close > upper, -1, 0))
-    return pd.Series(signal, index=df.index) 
+    # 마지막 값만 파이썬 int로 반환
+    return pd.Series([int(signal[-1])], index=[df.index[-1]]) 
